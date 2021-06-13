@@ -1,2 +1,2 @@
 # vsdemo
-This is a blank repository for visual studio 
+This is a blank repository for visual studio 2019
