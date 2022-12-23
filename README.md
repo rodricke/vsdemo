@@ -4,5 +4,7 @@ Another
 Test
 Fivver class
 On master branch
+first one
 another commit
 one more commit
+last one
