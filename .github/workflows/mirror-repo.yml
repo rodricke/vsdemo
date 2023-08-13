@@ -1,0 +1,46 @@
+name: Mirror Repository
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions: 
+  id-token: write
+  contents: write
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Code with submodules
+        run: |
+          git clone https://${{secrets.GITHUB_TOKEN}}@github.com/rodricke/vsdemo.git --branch main --single-branch
+          cd vsdemo
+          git submodule update --init --recursive --remote
+
+      - name: Unsubmodule
+        run: |
+          cd vsdemo
+          git rm --cached vue 
+          git rm .gitmodules   
+          rm -rf vue/.git
+
+      - name: Adding and Commit the module
+        run: |
+          cd vsdemo
+          git config user.name ${{ github.event.commits[0].author.name }}
+          git config user.email ${{ github.event.commits[0].author.email }}
+          git add . 
+          git commit --amend --no-edit
+
+      - name: Push repo snapshot
+        run: |
+          cd vsdemo
+          git remote add ado https://${{ secrets.AZURE_CREDENTIALS }}@dev.azure.com/rodrickedwards/pond/_git/vsdemo-mirror
+          git push --mirror ado -f
+          
